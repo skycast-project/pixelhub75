@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Бегущая строка — PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>Бегущая строка</h1>
+
+    <form method="POST" action="/settings/scroll">
+      <div class="card">
+        <p class="hint" style="margin-top:0">
+          Строки идут одна за другой по кругу: сначала дата, потом
+          погода сегодня, погода на завтра, и если найден датчик "дома" -
+          показания температуры/влажности/давления в помещении, а затем
+          температура на улице, если подключён уличный датчик.
+          У каждой — свой цвет и своя скорость. Сразу после даты идёт строка
+          <a href="/settings/calendar">«Календарь»</a> (дни рождения, события, праздники) —
+          она переливается радугой и настраивается на своей странице. Строки «MQTT» и «Народмон»
+          (принятые данные) настраиваются отдельно — на странице
+          <a href="/settings/receive">«Приём данных»</a>.
+        </p>
+
+        <div class="line-block">
+          <div class="line-title">Дата</div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="enabled0" name="enabled0" {{checkedLine0}}>
+            <label for="enabled0" style="margin:0">Показывать эту строку</label>
+          </div>
+          <label for="scrollColor0">Цвет текста</label>
+          <input type="color" id="scrollColor0" name="scrollColor0" value="{{scrollColor0}}">
+          <label for="speed0">Скорость (1 — медленно, 10 — быстро)</label>
+          <input type="range" id="speed0" name="speed0" min="1" max="10" value="{{scrollSpeed0}}">
+        </div>
+
+        <div class="line-block">
+          <div class="line-title">Погода сегодня</div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="enabled1" name="enabled1" {{checkedLine1}}>
+            <label for="enabled1" style="margin:0">Показывать эту строку</label>
+          </div>
+          <label for="scrollColor1">Цвет текста</label>
+          <input type="color" id="scrollColor1" name="scrollColor1" value="{{scrollColor1}}">
+          <label for="speed1">Скорость (1 — медленно, 10 — быстро)</label>
+          <input type="range" id="speed1" name="speed1" min="1" max="10" value="{{scrollSpeed1}}">
+        </div>
+
+        <div class="line-block">
+          <div class="line-title">Погода на завтра</div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="enabled2" name="enabled2" {{checkedLine2}}>
+            <label for="enabled2" style="margin:0">Показывать эту строку</label>
+          </div>
+          <label for="scrollColor2">Цвет текста</label>
+          <input type="color" id="scrollColor2" name="scrollColor2" value="{{scrollColor2}}">
+          <label for="speed2">Скорость (1 — медленно, 10 — быстро)</label>
+          <input type="range" id="speed2" name="speed2" min="1" max="10" value="{{scrollSpeed2}}">
+        </div>
+
+        <div class="line-block">
+          <div class="line-title">В помещении (датчик "дома")</div>
+          <p class="hint" style="margin-top:0">
+            Показывается, только если найден датчик. Пока датчик не
+            обнаружен — строка просто пропускается.
+          </p>
+          <div class="checkbox-row">
+            <input type="checkbox" id="enabled3" name="enabled3" {{checkedLine3}}>
+            <label for="enabled3" style="margin:0">Показывать эту строку</label>
+          </div>
+          <label for="scrollColor3">Цвет текста</label>
+          <input type="color" id="scrollColor3" name="scrollColor3" value="{{scrollColor3}}">
+          <label for="speed3">Скорость (1 — медленно, 10 — быстро)</label>
+          <input type="range" id="speed3" name="speed3" min="1" max="10" value="{{scrollSpeed3}}">
+        </div>
+
+        <div class="line-block">
+          <div class="line-title">Сейчас на улице (датчик DS18B20)</div>
+          <p class="hint" style="margin-top:0">
+            Показывается, только пока уличный датчик отвечает. Если датчика
+            нет или он перестал отвечать — строка пропускается.
+          </p>
+          <div class="checkbox-row">
+            <input type="checkbox" id="enabled4" name="enabled4" {{checkedLine4}}>
+            <label for="enabled4" style="margin:0">Показывать эту строку</label>
+          </div>
+          <label for="scrollColor4">Цвет текста</label>
+          <input type="color" id="scrollColor4" name="scrollColor4" value="{{scrollColor4}}">
+          <label for="speed4">Скорость (1 — медленно, 10 — быстро)</label>
+          <input type="range" id="speed4" name="speed4" min="1" max="10" value="{{scrollSpeed4}}">
+        </div>
+
+        
+      </div>
+    </form>
+  </div>
+</body>
+</html>

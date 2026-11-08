@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Часы — PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>Часы</h1>
+
+    <form method="POST" action="/settings/clock">
+      <div class="card">
+        <label for="font">Шрифт часов</label>
+        <select id="font" name="font">
+          <option value="0" {{selClk0}}>электрон</option>
+          <option value="1" {{selClk1}}>простой</option>
+          <option value="2" {{selClk2}}>квадрат</option>
+          <option value="3" {{selClk3}}>тонкий1</option>
+          <option value="4" {{selClk4}}>тонкий2</option>
+          <option value="5" {{selClk5}}>классич</option>
+          <option value="6" {{selClk6}}>контурный</option>
+        </select>
+
+        <label for="secFont">Шрифт секунд/даты/дня недели</label>
+        <select id="secFont" name="secFont">
+          <option value="0" {{selSec0}}>тонкий1</option>
+          <option value="1" {{selSec1}}>обычный</option>
+          <option value="2" {{selSec2}}>футурист1</option>
+          <option value="3" {{selSec3}}>футурист2</option>
+          <option value="4" {{selSec4}}>квадрат</option>
+          <option value="5" {{selSec5}}>тонкий2</option>
+        </select>
+
+        <label for="clockColor">Цвет времени</label>
+        <input type="color" id="clockColor" name="clockColor" value="{{clockColor}}">
+
+        <label for="secColor">Цвет секунд</label>
+        <input type="color" id="secColor" name="secColor" value="{{secColor}}">
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="showSec" name="showSec" {{checkedSec}}>
+          <label for="showSec" style="margin:0">Показывать секунды</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="line-title">Дата</div>
+        <label for="dayColor">Цвет дня недели</label>
+        <input type="color" id="dayColor" name="dayColor" value="{{dayColor}}">
+        <label for="dateColor">Цвет числа</label>
+        <input type="color" id="dateColor" name="dateColor" value="{{dateColor}}">
+        <label for="monthColor">Цвет месяца</label>
+        <input type="color" id="monthColor" name="monthColor" value="{{monthColor}}">
+      </div>
+      <div class="card">
+        <div class="line-title">Выходные дни</div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="weekendEnabled" name="weekendEnabled" {{checkedWeekend}}>
+          <label for="weekendEnabled" style="margin:0">Выделять субботу и воскресенье другим цветом</label>
+        </div>
+        <label for="weekendDayColor">Цвет дня недели в выходные</label>
+        <input type="color" id="weekendDayColor" name="weekendDayColor" value="{{weekendDayColor}}">
+        <label for="weekendDateColor">Цвет числа в выходные</label>
+        <input type="color" id="weekendDateColor" name="weekendDateColor" value="{{weekendDateColor}}">
+      </div>
+
+
+      
+</body>
+</html>

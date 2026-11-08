@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Погода — PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>Погода</h1>
+
+    <form method="POST" action="/settings/weather">
+      <div class="card">
+        <div class="checkbox-row">
+          <input type="checkbox" id="enabled" name="enabled" {{checkedEnabled}}>
+          <label for="enabled" style="margin:0">Показывать погоду</label>
+        </div>
+
+        <label for="gorod">Город (для отображения)</label>
+        <input type="text" id="gorod" name="gorod" value="{{gorod}}">
+
+        <label for="lat">Широта</label>
+        <input type="text" id="lat" name="lat" value="{{lat}}">
+
+        <label for="lon">Долгота</label>
+        <input type="text" id="lon" name="lon" value="{{lon}}">
+
+        <label for="interval">Интервал обновления (секунды, не меньше 60)</label>
+        <input type="number" id="interval" name="interval" value="{{interval}}" min="60">
+
+        <label for="weatherSource">Источник погоды</label>
+        <select id="weatherSource" name="weatherSource">
+          <option value="0" {{selSource0}}>Авто (Pirat Weather, при сбое — OpenWeatherMap)</option>
+          <option value="1" {{selSource1}}>Только Pirat Weather</option>
+          <option value="2" {{selSource2}}>Только OpenWeatherMap</option>
+        </select>
+
+        <label for="owmApiKey">Ключ OpenWeatherMap (нужен для резерва/варианта "Только OpenWeatherMap")</label>
+        <input type="text" id="owmApiKey" name="owmApiKey" value="{{owmApiKey}}" placeholder="получить бесплатно на openweathermap.org">
+      </div>
+
+      <div class="card">
+        <div class="checkbox-row">
+          <input type="checkbox" id="forecastScreen" name="forecastScreen" {{checkedForecastScreen}}>
+          <label for="forecastScreen" style="margin:0">Показывать экран прогноза на 3 дня</label>
+        </div>
+        <label for="forecastDayFont">Шрифт названий дней</label>
+        <select id="forecastDayFont" name="forecastDayFont">
+          <option value="0" {{selFcDay0}}>тонкий1</option>
+          <option value="1" {{selFcDay1}}>обычный</option>
+          <option value="2" {{selFcDay2}}>футурист1</option>
+          <option value="3" {{selFcDay3}}>футурист2</option>
+          <option value="4" {{selFcDay4}}>квадрат</option>
+          <option value="5" {{selFcDay5}}>тонкий2</option>
+        </select>
+
+        <label for="forecastDayColor">Цвет дня недели</label>
+        <input type="color" id="forecastDayColor" name="forecastDayColor" value="{{forecastDayColor}}">
+        <label for="forecastTempMinColor">Цвет мин. температуры</label>
+        <input type="color" id="forecastTempMinColor" name="forecastTempMinColor" value="{{forecastTempMinColor}}">
+        <label for="forecastTempMaxColor">Цвет макс. температуры</label>
+        <input type="color" id="forecastTempMaxColor" name="forecastTempMaxColor" value="{{forecastTempMaxColor}}">
+      </div>
+
+      <div class="card">
+        <div class="checkbox-row">
+          <input type="checkbox" id="weatherNowScreen" name="weatherNowScreen" {{checkedWeatherNowScreen}}>
+          <label for="weatherNowScreen" style="margin:0">Показывать экран "Погода сейчас"</label>
+        </div>
+        <label for="weatherTitleColor">Цвет заголовка "погода"</label>
+        <input type="color" id="weatherTitleColor" name="weatherTitleColor" value="{{weatherTitleColor}}">
+        <label for="weatherDateColor">Цвет чисел (сегодня/завтра)</label>
+        <input type="color" id="weatherDateColor" name="weatherDateColor" value="{{weatherDateColor}}">
+        <label for="weatherTimeColor">Цвет времени</label>
+        <input type="color" id="weatherTimeColor" name="weatherTimeColor" value="{{weatherTimeColor}}">
+        <label for="weatherTempNowColor">Цвет температуры "сейчас"</label>
+        <input type="color" id="weatherTempNowColor" name="weatherTempNowColor" value="{{weatherTempNowColor}}">
+        <label for="weatherTempTomorrowColor">Цвет температуры "завтра"</label>
+        <input type="color" id="weatherTempTomorrowColor" name="weatherTempTomorrowColor" value="{{weatherTempTomorrowColor}}">
+      </div>
+
+      <div class="card">
+        <div class="checkbox-row">
+          <input type="checkbox" id="homeScreen" name="homeScreen" {{checkedHomeScreen}}>
+          <label for="homeScreen" style="margin:0">Показывать экран "Дома" (нужен датчик)</label>
+        </div>
+        <label for="homeTitleColor">Цвет заголовка "дома:"</label>
+        <input type="color" id="homeTitleColor" name="homeTitleColor" value="{{homeTitleColor}}">
+        <label for="homeTimeColor">Цвет времени</label>
+        <input type="color" id="homeTimeColor" name="homeTimeColor" value="{{homeTimeColor}}">
+        <label for="homePressureColor">Цвет давления</label>
+        <input type="color" id="homePressureColor" name="homePressureColor" value="{{homePressureColor}}">
+        <label for="homeTempColor">Цвет температуры</label>
+        <input type="color" id="homeTempColor" name="homeTempColor" value="{{homeTempColor}}">
+        <label for="homeHumidityColor">Цвет влажности</label>
+        <input type="color" id="homeHumidityColor" name="homeHumidityColor" value="{{homeHumidityColor}}">
+
+        <div class="line-title" style="margin-top:12px">Поправка показаний датчика</div>
+        <label for="homeTempOffset">Температура, °C (например -1.5)</label>
+        <input type="number" id="homeTempOffset" name="homeTempOffset" step="0.1" min="-10" max="10" value="{{homeTempOffset}}">
+        <label for="homePressureOffset">Давление, мм рт. ст. (например -3)</label>
+        <input type="number" id="homePressureOffset" name="homePressureOffset" step="1" min="-50" max="50" value="{{homePressureOffset}}">
+        <label for="homeHumidityOffset">Влажность, % (только BME280)</label>
+        <input type="number" id="homeHumidityOffset" name="homeHumidityOffset" step="1" min="-30" max="30" value="{{homeHumidityOffset}}">
+      </div>
+
+      
+    </form>
+  </div>
+</body>
+</html>

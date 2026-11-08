@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wi-Fi — PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>Wi-Fi</h1>
+
+    <form method="POST" action="/settings/wifi">
+      <div class="card">
+        <p class="hint" style="margin-top:0">
+          После сохранения устройство перезагрузится и попробует
+          подключиться к указанной сети.
+        </p>
+
+        <label for="ssid">Имя сети (SSID)</label>
+        <input type="text" id="ssid" name="ssid" value="{{ssid}}">
+
+        <label for="password">Пароль</label>
+        <input type="password" id="password" name="password" value="{{password}}">
+
+        <label for="timezone">Часовой пояс (смещение от UTC, часы)</label>
+        <input type="number" id="timezone" name="timezone" value="{{timezone}}" min="-12" max="14">
+      </div>
+
+      
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Яркость — PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>Яркость</h1>
+
+    <form method="POST" action="/settings/brightness">
+      <div class="card">
+        <label for="brightness">Дневная яркость (0-255)</label>
+        <input type="range" id="brightness" name="brightness" min="0" max="255" value="{{brightness}}">
+
+        <label for="nightBrightness">Ночная яркость (0-255)</label>
+        <input type="range" id="nightBrightness" name="nightBrightness" min="0" max="255" value="{{nightBrightness}}">
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="autoBrightness" name="autoBrightness" {{checkedAutoBrightness}}>
+          <label for="autoBrightness" style="margin:0">Авто по восходу/закату</label>
+        </div>
+        <p class="hint">
+          Пока включено — экран переключается между дневной и ночной
+          яркостью сам, по времени восхода и заката.
+        </p>
+      </div>
+
+      
+    </form>
+  </div>
+</body>
+</html>

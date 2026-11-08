@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ночь/утро — PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>Ночь/утро</h1>
+
+    <form method="POST" action="/settings/night">
+      <div class="card">
+        <p class="hint" style="margin-top:0">
+          В указанное окно времени экран показывает короткую анимацию
+          засыпания (глазки закрываются), затем приглушённые часы,
+          градусник и уличную температуру на чёрном фоне. По окончании
+          окна звучит «доброе утро» и возвращаются обычные экраны. Окно
+          может проходить через полночь (например 23:00 → 7:00).
+        </p>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="schedule" name="schedule" {{scheduleChecked}}>
+          <label for="schedule" style="margin:0">Включать по расписанию</label>
+        </div>
+
+        <label for="onTime">Ночь наступает в</label>
+        <input type="time" id="onTime" name="onTime" value="{{onTime}}">
+
+        <label for="offTime">Утро наступает в</label>
+        <input type="time" id="offTime" name="offTime" value="{{offTime}}">
+      </div>
+
+      <div class="card">
+        <label for="nightSound">Файл звука "спокойной ночи" (на SD)</label>
+        <input type="text" id="nightSound" name="nightSound" value="{{nightSound}}">
+
+        <label for="morningSound">Файл звука "доброе утро" (на SD)</label>
+        <input type="text" id="morningSound" name="morningSound" value="{{morningSound}}">
+      </div>
+
+      <div class="card">
+        <div class="line-title">Часы ночью</div>
+        <label for="nightFont">Шрифт ночных часов</label>
+        <select id="nightFont" name="nightFont">
+          <option value="0" {{selNight0}}>электрон</option>
+          <option value="1" {{selNight1}}>простой</option>
+          <option value="2" {{selNight2}}>квадрат</option>
+          <option value="3" {{selNight3}}>тонкий1</option>
+          <option value="4" {{selNight4}}>тонкий2</option>
+          <option value="5" {{selNight5}}>классич</option>
+          <option value="6" {{selNight6}}>контурный</option>
+        </select>
+
+        <label for="nightClockColor">Цвет ночных часов</label>
+        <input type="color" id="nightClockColor" name="nightClockColor" value="{{nightClockColor}}">
+        <p class="hint">Для ночи лучше выбирать тёмный, приглушённый цвет, чтобы не слепило.</p>
+      </div>
+
+      <div class="card">
+        <div class="line-title">Улица (справа и внизу)</div>
+        <label for="nightLabelColor">Цвет надписи "улица"</label>
+        <input type="color" id="nightLabelColor" name="nightLabelColor" value="{{nightLabelColor}}">
+
+        <label for="nightTempColor">Цвет уличной температуры</label>
+        <input type="color" id="nightTempColor" name="nightTempColor" value="{{nightTempColor}}">
+        <p class="hint">Цвета часов, надписи и температуры выбираются независимо, чтобы в темноте они не сливались.</p>
+      </div>
+
+      <div class="card">
+        <div class="line-title">Яркость ночного экрана</div>
+        <label for="nightBr">Яркость часов, градусника и температуры: <b id="nightBrVal">{{nightScreenBrightness}}%</b></label>
+        <input type="range" id="nightBr" name="nightScreenBrightness" min="10" max="100" value="{{nightScreenBrightness}}"
+               oninput="document.getElementById('nightBrVal').textContent=this.value+'%'">
+        <p class="hint">100% — цвета ровно такие, как выбраны выше; меньше — приглушает всё на ночном экране. Общая яркость матрицы настраивается на странице «Яркость».</p>
+      </div>
+
+      
+    </form>
+  </div>
+</body>
+</html>

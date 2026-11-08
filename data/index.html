@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .status-row { display: flex; align-items: center; gap: 10px; }
+    .status-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: {{sensorColor}};
+      box-shadow: 0 0 8px {{sensorColor}};
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>PixelHub 75</h1>
+
+    <div class="card">
+      <p class="hint" style="margin-top:0">IP-адрес устройства: {{ip}}</p>
+      <p class="hint">Погода в {{gorod}}: {{currentTemp}}°C, {{weatherDesc}}</p>
+      <p class="hint">Яркость: {{brightnessMode}}</p>
+    </div>
+
+    <div class="card">
+      <div class="line-title">Датчик "дома"</div>
+      <div class="status-row">
+        <div class="status-dot"></div>
+        <span>{{sensorText}}</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

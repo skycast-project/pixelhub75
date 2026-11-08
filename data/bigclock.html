@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Большие часы — PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>Большие часы</h1>
+
+    <form method="POST" action="/settings/bigclock">
+      <div class="card">
+        <p class="hint" style="margin-top:0">
+          Пока большие часы активны - ни бегущая строка, ни другие экраны
+          не показываются, только время крупным шрифтом.
+        </p>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="schedule" name="schedule" {{scheduleChecked}}>
+          <label for="schedule" style="margin:0">Включать по расписанию</label>
+        </div>
+
+        <label for="onTime">Включаются в</label>
+        <input type="time" id="onTime" name="onTime" value="{{onTime}}">
+
+        <label for="offTime">Выключаются в</label>
+        <input type="time" id="offTime" name="offTime" value="{{offTime}}">
+      </div>
+
+      <div class="card">
+        <label for="font">Шрифт</label>
+        <select id="font" name="font">
+          <option value="0" {{selBig0}}>0</option>
+          <option value="1" {{selBig1}}>1</option>
+          <option value="2" {{selBig2}}>2</option>
+          <option value="3" {{selBig3}}>3</option>
+          <option value="4" {{selBig4}}>4</option>
+          <option value="5" {{selBig5}}>5</option>
+          <option value="6" {{selBig6}}>6</option>
+          <option value="7" {{selBig7}}>7</option>
+          <option value="8" {{selBig8}}>8</option>
+          <option value="9" {{selBig9}}>9</option>
+          <option value="10" {{selBig10}}>10</option>
+          <option value="11" {{selBig11}}>11</option>
+          <option value="12" {{selBig12}}>12</option>
+        </select>
+        <p class="hint">В оригинале эти 13 вариантов шрифта без словесных названий, только номер - как есть.</p>
+
+        <label for="bigClockColor">Цвет</label>
+        <input type="color" id="bigClockColor" name="bigClockColor" value="{{bigClockColor}}">
+
+        <label for="animDir">Анимация появления</label>
+        <select id="animDir" name="animDir">
+          <option value="0" {{selAnim0}}>Слева</option>
+          <option value="1" {{selAnim1}}>Справа</option>
+          <option value="2" {{selAnim2}}>Сверху</option>
+          <option value="3" {{selAnim3}}>Снизу</option>
+          <option value="4" {{selAnim4}}>Хаотично</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="checkbox-row">
+          <input type="checkbox" id="activeNow" name="activeNow" {{activeChecked}}>
+          <label for="activeNow" style="margin:0">Включить прямо сейчас (вручную)</label>
+        </div>
+        <p class="hint">Снимите галочку и сохраните, чтобы выключить вручную в любой момент - расписание всё равно сработает в свой час.</p>
+      </div>
+
+      
+    </form>
+  </div>
+</body>
+</html>

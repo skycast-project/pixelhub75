@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Интеграции — PixelHub 75</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Главная</a>
+      <a href="/settings/clock">Часы</a>
+      <a href="/settings/scroll">Бегущая строка</a>
+      <a href="/settings/calendar">Календарь</a>
+      <a href="/settings/sensors">Датчики</a>
+      <a href="/settings/weather">Погода</a>
+      <a href="/settings/bigclock">Большие часы</a>
+      <a href="/settings/night">Ночь/утро</a>
+      <a href="/settings/integrations">Интеграции</a>
+      <a href="/settings/brightness">Яркость</a>
+      <a href="/settings/wifi">Wi-Fi</a>
+    </div>
+
+    <h1>Интеграции</h1>
+
+    <div class="card">
+      <p class="hint" style="margin:0">Приём данных (MQTT и Народный мониторинг → бегущая строка): <a href="/settings/receive">открыть страницу «Приём данных»</a></p>
+    </div>
+
+    <div class="card">
+      <p class="hint" style="margin:0">Обновление прошивки по Wi-Fi, без кабеля: <a href="/settings/update">открыть страницу «Обновление»</a></p>
+    </div>
+
+    <form method="POST" action="/settings/integrations">
+      <div class="card">
+        <div class="line-title">MQTT</div>
+        <p class="hint">Состояние: <b>{{mqttStatus}}</b></p>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="mqttEnabled" name="mqttEnabled" {{chkMqtt}}>
+          <label for="mqttEnabled" style="margin:0">Отправлять данные по MQTT</label>
+        </div>
+
+        <label for="mqttMode">Режим</label>
+        <select id="mqttMode" name="mqttMode">
+          <option value="0" {{selMode0}}>Простой брокер (свои топики)</option>
+          <option value="1" {{selMode1}}>Home Assistant (автообнаружение)</option>
+        </select>
+
+        <label for="mqttHost">Адрес брокера</label>
+        <input type="text" id="mqttHost" name="mqttHost" value="{{mqttHost}}" placeholder="YOUR-ROUTER0">
+
+        <label for="mqttPort">Порт</label>
+        <input type="number" id="mqttPort" name="mqttPort" value="{{mqttPort}}" min="1" max="65535">
+
+        <label for="mqttUser">Логин (если нужен)</label>
+        <input type="text" id="mqttUser" name="mqttUser" value="{{mqttUser}}" autocomplete="off">
+
+        <label for="mqttPass">Пароль (пусто — оставить как есть)</label>
+        <input type="password" id="mqttPass" name="mqttPass" value="" autocomplete="new-password" placeholder="{{passHint}}">
+        <div class="checkbox-row">
+          <input type="checkbox" id="clearPass" name="clearPass">
+          <label for="clearPass" style="margin:0">Очистить сохранённый пароль</label>
+        </div>
+
+        <label for="mqttBase">Корневой топик</label>
+        <input type="text" id="mqttBase" name="mqttBase" value="{{mqttBase}}">
+
+        <label for="mqttInterval">Интервал отправки (секунды, не меньше 10)</label>
+        <input type="number" id="mqttInterval" name="mqttInterval" value="{{mqttInterval}}" min="10">
+
+        <div class="line-title" style="margin-top:12px">Что отправлять</div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="mqttHome" name="mqttHome" {{chkMqttHome}}>
+          <label for="mqttHome" style="margin:0">Домашний датчик (температура, влажность, давление)</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="mqttOutdoor" name="mqttOutdoor" {{chkMqttOut}}>
+          <label for="mqttOutdoor" style="margin:0">Уличный датчик DS18B20</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="mqttWeather" name="mqttWeather" {{chkMqttWx}}>
+          <label for="mqttWeather" style="margin:0">Текущая погода из интернета</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="mqttStatus" name="mqttStatus" {{chkMqttSys}}>
+          <label for="mqttStatus" style="margin:0">Состояние устройства (Wi-Fi, время работы, память, IP)</label>
+        </div>
+
+        <p class="hint">Топики: корень/home/temp, home/humidity, home/pressure (гПа), home/pressure_mmhg, outdoor/temp, weather/…, status/… Доступность устройства — корень/availability (online/offline).</p>
+      </div>
+
+      <div class="card">
+        <div class="line-title">Народный мониторинг</div>
+        <p class="hint">Состояние: <b>{{nmStatus}}</b></p>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="nmEnabled" name="nmEnabled" {{chkNm}}>
+          <label for="nmEnabled" style="margin:0">Отправлять данные на narodmon.ru (раз в 5 минут)</label>
+        </div>
+
+        <label for="nmName">Имя устройства</label>
+        <input type="text" id="nmName" name="nmName" value="{{nmName}}">
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="nmHome" name="nmHome" {{chkNmHome}}>
+          <label for="nmHome" style="margin:0">Домашний датчик</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="nmOutdoor" name="nmOutdoor" {{chkNmOut}}>
+          <label for="nmOutdoor" style="margin:0">Уличный датчик DS18B20</label>
+        </div>
+
+        <p class="hint">MAC устройства для регистрации на narodmon.ru: <b>{{mac}}</b>. Координаты берутся со страницы «Погода». Датчики появятся на сайте после первой отправки.</p>
+      </div>
+
+      
+    </form>
+
+    <div class="card">
+      <div class="line-title">Резервная копия настроек</div>
+      <p class="hint">Сохраняет все настройки часов, погоды, будильника, ночного режима и радио (кроме списка станций и интеграций, они хранятся отдельно). Копия настроек автоматически лежит и во флеш-памяти устройства, поэтому после «Upload Filesystem Image» они восстанавливаются сами. Файл нужен как запасной вариант: для переноса на другое устройство или после полной очистки флеш-памяти. В файле открытым текстом лежат пароль Wi-Fi и ключ OpenWeatherMap, никому его не отдавайте.</p>
+      <p><a href="/backup/download" download>Скачать настройки (pixelhub75-config.json)</a></p>
+
+      <form method="POST" action="/backup/restore" enctype="multipart/form-data">
+        <label for="cfgfile">Восстановить из файла</label>
+        <input type="file" id="cfgfile" name="file" accept=".json,application/json" required>
+        <button type="submit" onclick="return confirm('Текущие настройки будут заменены, устройство перезагрузится. Продолжить?');">Восстановить</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
