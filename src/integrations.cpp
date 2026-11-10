@@ -68,11 +68,11 @@ String integrationsMac() {
 // ПРИЁМ: принятые значения (под мьютексом) и вспомогательные функции
 // ------------------------------------------------------------
 static String g_mqttRxVal[RX_ITEMS];
-static unsigned long g_mqttRxMs[RX_ITEMS] = {0, 0, 0, 0};   // 0 = значения ещё нет
+static unsigned long g_mqttRxMs[RX_ITEMS] = {0, 0};   // 0 = значения ещё нет
 static String g_mqttRxText;
 static unsigned long g_mqttRxTextMs = 0;
 static String g_nmRxVal[RX_ITEMS];
-static unsigned long g_nmRxMs[RX_ITEMS] = {0, 0, 0, 0};
+static unsigned long g_nmRxMs[RX_ITEMS] = {0, 0};
 static uint32_t g_rxVersion = 0;
 static String g_nmRxResult = "ожидание первого запроса";
 static unsigned long g_nmRxLastMs = 0;
@@ -916,18 +916,27 @@ static String lineSettings(const char *pfx, bool on, const String &color, int sp
   return h;
 }
 
-static String buildReceivePage() {
-  IntegrationsConfig c = getIntegrationsConfig();
+static String rxHeader(const char *title, bool nmActive) {
   String h;
-  h.reserve(7200);
-  h += "<!DOCTYPE html><html lang=\"ru\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-       "<title>Приём данных — PixelHub 75</title><link rel=\"stylesheet\" href=\"/style.css\"></head><body><div class=\"wrap\">"
+  h.reserve(4200);
+  h += "<!DOCTYPE html><html lang=\"ru\"><head><meta charset=\"utf-8\">"
+       "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+       "<title>";
+  h += title;
+  h += " — PixelHub 75</title><link rel=\"stylesheet\" href=\"/style.css\"></head><body><div class=\"wrap\">"
        "<div class=\"nav\"><a href=\"/\">Главная</a><a href=\"/settings/clock\">Часы</a>"
-       "<a href=\"/settings/integrations\">Интеграции</a><a href=\"/settings/wifi\">Wi-Fi</a></div>"
-       "<h1>Приём данных</h1>"
-       "<p class=\"hint\">Значения идут в бегущую строку (MQTT и Народмон).</p>"
-       "<form method=\"POST\" action=\"/settings/receive\">";
+       "<a href=\"/settings/receive\">Приём MQTT</a><a href=\"/settings/nmrx\">Народмон</a></div>"
+       "<h1>";
+  h += title;
+  h += "</h1><form method=\"POST\" action=\"";
+  h += nmActive ? "/settings/nmrx" : "/settings/receive";
+  h += "\">";
+  return h;
+}
 
+static String buildMqttPage() {
+  IntegrationsConfig c = getIntegrationsConfig();
+  String h = rxHeader("Приём по MQTT", false);
   // ---- MQTT ----
   h += "<div class=\"card\"><div class=\"line-title\">Приём по MQTT</div><p class=\"hint\">Состояние: <b>" + esc(integrationsMqttRxStatus()) + "</b></p>";
   h += "<div class=\"checkbox-row\"><input type=\"checkbox\" id=\"mqttRxEnabled\" name=\"mqttRxEnabled\"" + chkAttr(c.mqttRxEnabled) +
@@ -949,6 +958,13 @@ static String buildReceivePage() {
   h += lineSettings("mqttRx", c.mqttRxLineOn, c.mqttRxColor, c.mqttRxSpeed, c.mqttRxStaleMin);
   h += "</div>";
 
+  h += "<button type=\"submit\">Сохранить</button></form></div></body></html>";
+  return h;
+}
+
+static String buildNmPage() {
+  IntegrationsConfig c = getIntegrationsConfig();
+  String h = rxHeader("Приём с Народного мониторинга", true);
   // ---- Народмон ----
   h += "<div class=\"card\"><div class=\"line-title\">Приём с Народного мониторинга</div><p class=\"hint\">Состояние: <b>" +
        esc(integrationsNmRxStatus()) + "</b></p>";
@@ -976,37 +992,53 @@ static String buildReceivePage() {
 
 void integrationsRegisterWeb(AsyncWebServer &srv) {
   srv.on("/settings/receive", HTTP_GET, [](AsyncWebServerRequest *req) {
-    sendHtmlChunked(req, buildReceivePage());
+    sendHtmlChunked(req, buildMqttPage());
   });
+  srv.on("/settings/nmrx", HTTP_GET, [](AsyncWebServerRequest *req) {
+    sendHtmlChunked(req, buildNmPage());
+  });
+
   srv.on("/settings/receive", HTTP_POST, [](AsyncWebServerRequest *req) {
     auto P = [&](const String &name, const String &def) -> String {
       return req->hasParam(name, true) ? req->getParam(name, true)->value() : def;
     };
-    IntegrationsConfig c = getIntegrationsConfig();   // настройки отправки остаются как были
+    IntegrationsConfig c = getIntegrationsConfig();
     c.mqttRxEnabled = req->hasParam("mqttRxEnabled", true);
-    c.nmRxEnabled = req->hasParam("nmRxEnabled", true);
     for (int i = 0; i < RX_ITEMS; i++) {
       String n = String(i);
-      c.mqttRxTopic[i] = P("mt" + n, "");
-      c.mqttRxLabel[i] = P("ml" + n, "");
-      c.mqttRxUnit[i] = P("mu" + n, "");
-      c.nmRxId[i] = P("ni" + n, "");
-      c.nmRxLabel[i] = P("nl" + n, "");
-      c.nmRxUnit[i] = P("nu" + n, "");
+      c.mqttRxTopic[i] = P("mt" + n, c.mqttRxTopic[i]);
+      c.mqttRxLabel[i] = P("ml" + n, c.mqttRxLabel[i]);
+      c.mqttRxUnit[i] = P("mu" + n, c.mqttRxUnit[i]);
     }
-    c.mqttRxTextTopic = P("mtext", "");
-    c.nmApiKey = P("nmApiKey", "");
-    c.nmRxInterval = P("nmRxInterval", String(c.nmRxInterval)).toInt();
+    c.mqttRxTextTopic = P("mtext", c.mqttRxTextTopic);
     c.mqttRxLineOn = req->hasParam("mqttRxOn", true);
     c.mqttRxColor = P("mqttRxColor", c.mqttRxColor);
     c.mqttRxSpeed = P("mqttRxSpeed", String(c.mqttRxSpeed)).toInt();
     c.mqttRxStaleMin = P("mqttRxStale", String(c.mqttRxStaleMin)).toInt();
+    setIntegrationsConfig(c);
+    req->redirect("/settings/receive");
+  });
+
+  srv.on("/settings/nmrx", HTTP_POST, [](AsyncWebServerRequest *req) {
+    auto P = [&](const String &name, const String &def) -> String {
+      return req->hasParam(name, true) ? req->getParam(name, true)->value() : def;
+    };
+    IntegrationsConfig c = getIntegrationsConfig();
+    c.nmRxEnabled = req->hasParam("nmRxEnabled", true);
+    for (int i = 0; i < RX_ITEMS; i++) {
+      String n = String(i);
+      c.nmRxId[i] = P("ni" + n, c.nmRxId[i]);
+      c.nmRxLabel[i] = P("nl" + n, c.nmRxLabel[i]);
+      c.nmRxUnit[i] = P("nu" + n, c.nmRxUnit[i]);
+    }
+    c.nmApiKey = P("nmApiKey", c.nmApiKey);
+    c.nmRxInterval = P("nmRxInterval", String(c.nmRxInterval)).toInt();
     c.nmRxLineOn = req->hasParam("nmRxOn", true);
     c.nmRxColor = P("nmRxColor", c.nmRxColor);
     c.nmRxSpeed = P("nmRxSpeed", String(c.nmRxSpeed)).toInt();
     c.nmRxStaleMin = P("nmRxStale", String(c.nmRxStaleMin)).toInt();
     setIntegrationsConfig(c);
-    req->redirect("/settings/receive");
+    req->redirect("/settings/nmrx");
   });
 }
 
@@ -1035,6 +1067,6 @@ static void integrationsTask(void *) {
 
 void startIntegrationsTask() {
   ensureMux();
-  xTaskCreatePinnedToCore(integrationsTask, "integr", 12288, nullptr, 1, nullptr, 0);
+  xTaskCreatePinnedToCore(integrationsTask, "integr", 8192, nullptr, 1, nullptr, 0);
   Serial.println("✅ Задача интеграций (MQTT/Народмон) запущена");
 }

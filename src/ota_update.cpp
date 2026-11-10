@@ -245,7 +245,7 @@ static void handleOtaUrl(AsyncWebServerRequest *req) {
     return;
   }
   String *u = new String(req->getParam("url")->value());
-  xTaskCreate(otaUrlTask, "otaurl", 12288, u, 1, nullptr);
+  xTaskCreate(otaUrlTask, "otaurl", 8192, u, 1, nullptr);
   req->send(200, "text/html; charset=utf-8",
     "<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>"
     "<h1>Обновление начато</h1><p>Плата скачивает прошивку сама. "

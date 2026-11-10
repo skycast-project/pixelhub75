@@ -890,33 +890,29 @@ static String htmlEsc(const String &s) {
 }
 
 void handleIntegrationsSettings(AsyncWebServerRequest *request) {
-  String html = loadTemplate("/integrations.html");
   IntegrationsConfig c = getIntegrationsConfig();
-
-  html.replace("{{chkMqtt}}", c.mqttEnabled ? "checked" : "");
-  html.replace("{{selMode0}}", c.mqttMode == 0 ? "selected" : "");
-  html.replace("{{selMode1}}", c.mqttMode == 1 ? "selected" : "");
-  html.replace("{{mqttHost}}", htmlEsc(c.mqttHost));
-  html.replace("{{mqttPort}}", String(c.mqttPort));
-  html.replace("{{mqttUser}}", htmlEsc(c.mqttUser));
-  html.replace("{{passHint}}", c.mqttPass.length() ? "пароль сохранён" : "не задан");
-  html.replace("{{mqttBase}}", htmlEsc(c.mqttBase));
-  html.replace("{{mqttInterval}}", String(c.mqttInterval));
-  html.replace("{{chkMqttHome}}", c.mqttHome ? "checked" : "");
-  html.replace("{{chkMqttOut}}", c.mqttOutdoor ? "checked" : "");
-  html.replace("{{chkMqttWx}}", c.mqttWeather ? "checked" : "");
-  html.replace("{{chkMqttSys}}", c.mqttStatus ? "checked" : "");
-
-  html.replace("{{chkNm}}", c.nmEnabled ? "checked" : "");
-  html.replace("{{nmName}}", htmlEsc(c.nmName));
-  html.replace("{{chkNmHome}}", c.nmHome ? "checked" : "");
-  html.replace("{{chkNmOut}}", c.nmOutdoor ? "checked" : "");
-  html.replace("{{mac}}", integrationsMac());
-
-  html.replace("{{mqttStatus}}", htmlEsc(integrationsMqttStatus()));
-  html.replace("{{nmStatus}}", htmlEsc(integrationsNarodmonStatus()));
-
-  sendHtmlChunked(request, html);
+  sendTemplateChunked(request, "/integrations.html", {
+    {"{{chkMqtt}}", c.mqttEnabled ? "checked" : ""},
+    {"{{selMode0}}", c.mqttMode == 0 ? "selected" : ""},
+    {"{{selMode1}}", c.mqttMode == 1 ? "selected" : ""},
+    {"{{mqttHost}}", htmlEsc(c.mqttHost)},
+    {"{{mqttPort}}", String(c.mqttPort)},
+    {"{{mqttUser}}", htmlEsc(c.mqttUser)},
+    {"{{passHint}}", c.mqttPass.length() ? "пароль сохранён" : "не задан"},
+    {"{{mqttBase}}", htmlEsc(c.mqttBase)},
+    {"{{mqttInterval}}", String(c.mqttInterval)},
+    {"{{chkMqttHome}}", c.mqttHome ? "checked" : ""},
+    {"{{chkMqttOut}}", c.mqttOutdoor ? "checked" : ""},
+    {"{{chkMqttWx}}", c.mqttWeather ? "checked" : ""},
+    {"{{chkMqttSys}}", c.mqttStatus ? "checked" : ""},
+    {"{{chkNm}}", c.nmEnabled ? "checked" : ""},
+    {"{{nmName}}", htmlEsc(c.nmName)},
+    {"{{chkNmHome}}", c.nmHome ? "checked" : ""},
+    {"{{chkNmOut}}", c.nmOutdoor ? "checked" : ""},
+    {"{{mac}}", integrationsMac()},
+    {"{{mqttStatus}}", htmlEsc(integrationsMqttStatus())},
+    {"{{nmStatus}}", htmlEsc(integrationsNarodmonStatus())},
+  });
 }
 
 void handleIntegrationsSettingsPost(AsyncWebServerRequest *request) {
@@ -1135,31 +1131,21 @@ void setupWebServer() {
     r->send(res);
   });
   server.on("/settings/alarm", HTTP_GET, [](AsyncWebServerRequest *r) {
-    static const char *dn[7] = {"Вс","Пн","Вт","Ср","Чт","Пт","Сб"};
-    String h = "<!DOCTYPE html><html lang=\"ru\"><head><meta charset=\"utf-8\">"
-      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-      "<title>Будильник — PixelHub 75</title><link rel=\"stylesheet\" href=\"/style.css\"></head><body><div class=\"wrap\">"
-      "<div class=\"nav\"><a href=\"/\">Главная</a><a href=\"/settings/clock\">Часы</a></div>"
-      "<h1>Будильник</h1><div class=\"card\"><p class=\"hint\" style=\"margin-top:0\">Мелодии: папка /02, файлы 001.mp3…009.mp3.</p>"
-      "<form method=\"POST\" action=\"/settings/alarm\">";
+    std::vector<std::pair<String, String>> reps;
+    reps.reserve(35);
     for (int i = 0; i < 7; i++) {
       int tr = 1;
       String s = alarmSoundPath[i]; s.trim();
       int sl = s.lastIndexOf('/'); if (sl >= 0) s = s.substring(sl + 1);
       int dt = s.indexOf('.'); if (dt >= 0) s = s.substring(0, dt);
       if (s.length() && s.toInt() > 0) tr = constrain(s.toInt(), 1, 9);
-      h += "<div class=\"line-title\" style=\"margin-top:10px\">" + String(dn[i]) + "</div>"
-        "<div style=\"display:flex;gap:6px;flex-wrap:wrap\">"
-        "<input type=\"number\" name=\"h" + String(i) + "\" min=\"0\" max=\"23\" value=\"" + String(alarmHour[i]) + "\" style=\"width:70px\">"
-        "<input type=\"number\" name=\"m" + String(i) + "\" min=\"0\" max=\"59\" value=\"" + String(alarmMinute[i]) + "\" style=\"width:70px\">"
-        "<input type=\"number\" name=\"t" + String(i) + "\" min=\"1\" max=\"9\" value=\"" + String(tr) + "\" style=\"width:70px\">"
-        "<label style=\"margin:0\"><input type=\"checkbox\" name=\"e" + String(i) + "\"";
-      if (alarmEnabled[i]) h += " checked";
-      h += "> вкл</label></div>";
+      String n = String(i);
+      reps.push_back({"{{h" + n + "}}", String(alarmHour[i])});
+      reps.push_back({"{{m" + n + "}}", String(alarmMinute[i])});
+      reps.push_back({"{{t" + n + "}}", String(tr)});
+      reps.push_back({"{{e" + n + "}}", alarmEnabled[i] ? " checked" : ""});
     }
-    h += "<button type=\"submit\" style=\"margin-top:14px\">Сохранить</button></form>"
-      "<p class=\"hint\"><a href=\"/api/alarm?stop=1\">Остановить будильник</a></p></div></div></body></html>";
-    r->send(200, "text/html; charset=utf-8", h);
+    sendTemplateChunked(r, "/alarm.html", reps);
   });
   server.on("/settings/alarm", HTTP_POST, [](AsyncWebServerRequest *r) {
     for (int i = 0; i < 7; i++) {
@@ -1179,18 +1165,11 @@ void setupWebServer() {
   });
 
   server.on("/settings/hwpins", HTTP_GET, [](AsyncWebServerRequest *r) {
-    String h = "<!DOCTYPE html><html lang=\"ru\"><head><meta charset=\"utf-8\">"
-      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-      "<title>Пины датчиков — PixelHub 75</title><link rel=\"stylesheet\" href=\"/style.css\"></head><body><div class=\"wrap\">"
-      "<div class=\"nav\"><a href=\"/\">Главная</a><a href=\"/settings/clock\">Часы</a><a href=\"/settings/pins\">Пины матрицы</a></div>"
-      "<h1>Пины датчиков и плеера</h1><div class=\"card\">"
-      "<form method=\"POST\" action=\"/settings/hwpins\">"
-      "<label for=\"od\">DS18B20, DATA</label><input type=\"number\" id=\"od\" name=\"od\" min=\"0\" max=\"39\" value=\"" + String(outdoorPin) + "\">"
-      "<label for=\"tx\">DFPlayer TX (платы)</label><input type=\"number\" id=\"tx\" name=\"tx\" min=\"0\" max=\"39\" value=\"" + String(dfpTxPin) + "\">"
-      "<label for=\"rx\">DFPlayer RX (платы)</label><input type=\"number\" id=\"rx\" name=\"rx\" min=\"0\" max=\"39\" value=\"" + String(dfpRxPin) + "\">"
-      "<p class=\"hint\">После сохранения плата перезагрузится. Нельзя 6–11 (флеш-память).</p>"
-      "<button type=\"submit\">Сохранить и перезагрузить</button></form></div></div></body></html>";
-    r->send(200, "text/html; charset=utf-8", h);
+    sendTemplateChunked(r, "/hwpins.html", {
+      {"{{od}}", String(outdoorPin)},
+      {"{{tx}}", String(dfpTxPin)},
+      {"{{rx}}", String(dfpRxPin)},
+    });
   });
 
   server.on("/settings/hwpins", HTTP_POST, [](AsyncWebServerRequest *r) {
@@ -1208,29 +1187,16 @@ void setupWebServer() {
   });
 
   server.on("/settings/sound", HTTP_GET, [](AsyncWebServerRequest *r) {
-    String h = "<!DOCTYPE html><html lang=\"ru\"><head><meta charset=\"utf-8\">"
-      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
-      "<title>Звук — PixelHub 75</title><link rel=\"stylesheet\" href=\"/style.css\"></head><body><div class=\"wrap\">"
-      "<div class=\"nav\"><a href=\"/\">Главная</a><a href=\"/settings/clock\">Часы</a></div>"
-      "<h1>Звук</h1><div class=\"card\"><p class=\"hint\">";
-    h += dfpReady() ? "DFPlayer подключён." : "DFPlayer не найден.";
-    h += " Файлов: " + String(dfpTracks()) + ".</p>"
-      "<form method=\"POST\" action=\"/settings/sound\">"
-      "<label for=\"vol\">Громкость (0–30)</label><input type=\"number\" id=\"vol\" name=\"vol\" min=\"0\" max=\"30\" value=\"" + String(dfVolume) + "\">"
-      "<label for=\"voice\">Голос</label><select id=\"voice\" name=\"voice\">"
-      "<option value=\"0\"" + String(hourlyVoiceMode == 0 ? " selected" : "") + ">Женский</option>"
-      "<option value=\"1\"" + String(hourlyVoiceMode == 1 ? " selected" : "") + ">Мужской</option>"
-      "<option value=\"2\"" + String(hourlyVoiceMode == 2 ? " selected" : "") + ">Куранты</option></select>"
-      "<div class=\"checkbox-row\"><input type=\"checkbox\" id=\"hourly\" name=\"hourly\"";
-    if (hourlyAnnounceEnabled) h += " checked";
-    h += "><label for=\"hourly\" style=\"margin:0\">Озвучивать время каждый час</label></div>"
-      "<div class=\"checkbox-row\"><input type=\"checkbox\" id=\"night\" name=\"night\"";
-    if (dfNightSound) h += " checked";
-    h += "><label for=\"night\" style=\"margin:0\">Ночной и утренний звук</label></div>"
-      "<button type=\"submit\">Сохранить</button></form>"
-      "<p class=\"hint\"><a href=\"/api/df?folder=1&file=1\">Ночной</a> | <a href=\"/api/df?folder=1&file=2\">Утренний</a> | "
-      "<a href=\"/api/df?folder=12&file=" + String(hours + 1) + "\">Куранты</a> | <a href=\"/api/df?stop=1\">Стоп</a></p></div></div></body></html>";
-    r->send(200, "text/html; charset=utf-8", h);
+    sendTemplateChunked(r, "/sound.html", {
+      {"{{dfStatus}}", dfpReady() ? "DFPlayer подключён." : "DFPlayer не найден."},
+      {"{{dfTracks}}", String(dfpTracks())},
+      {"{{vol}}", String(dfVolume)},
+      {"{{v0}}", hourlyVoiceMode == 0 ? " selected" : ""},
+      {"{{v1}}", hourlyVoiceMode == 1 ? " selected" : ""},
+      {"{{v2}}", hourlyVoiceMode == 2 ? " selected" : ""},
+      {"{{hourly}}", hourlyAnnounceEnabled ? " checked" : ""},
+      {"{{night}}", dfNightSound ? " checked" : ""},
+    });
   });
   server.on("/settings/sound", HTTP_POST, [](AsyncWebServerRequest *r) {
     if (r->hasParam("vol", true)) dfpSetVolume((uint8_t)constrain(r->getParam("vol", true)->value().toInt(), 0, 30));

@@ -640,7 +640,7 @@ void startWeatherTask() {
   if (weatherTaskHandle != nullptr) return;
   // Стек 16 КБ - TLS-рукопожатие (mbedtls) требует заметно больше стандартных 8 КБ.
   // Ядро 0 (там же Wi-Fi), приоритет 1 - ниже основного цикла, анимацию не тормозит.
-  xTaskCreatePinnedToCore(weatherTask, "weather", 16384, nullptr, 1, &weatherTaskHandle, 0);
+  xTaskCreatePinnedToCore(weatherTask, "weather", 10240, nullptr, 1, &weatherTaskHandle, 0);
 }
 
 bool requestWeatherUpdate() {

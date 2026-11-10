@@ -201,3 +201,44 @@ void pageMemBegin() {
 void pageMemEnd() {
   // ничего: резерв больше не выделяем
 }
+
+// ------------------------------------------------------------
+// Отдача готового буфера без копирования: буфер остаётся валидным,
+// пока клиент читает ответ. busy снимается по завершении.
+// ------------------------------------------------------------
+struct BufState {
+  const char *data;
+  size_t len;
+  bool *busy;
+};
+
+void sendBufferChunked(AsyncWebServerRequest *req, const char *data, size_t len, bool *busy) {
+  if (!req) return;
+  if (!data || len == 0) {
+    if (busy) *busy = false;
+    req->send(500, "text/plain", "empty");
+    return;
+  }
+  auto st = std::make_shared<BufState>();
+  st->data = data;
+  st->len = len;
+  st->busy = busy;
+  AsyncWebServerResponse *res = req->beginChunkedResponse(
+      "text/html; charset=utf-8",
+      [st](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
+        if (index >= st->len) {
+          if (st->busy) { *st->busy = false; st->busy = nullptr; }
+          return 0;
+        }
+        size_t n = st->len - index;
+        if (n > maxLen) n = maxLen;
+        memcpy(buffer, st->data + index, n);
+        return n;
+      });
+  if (!res) {
+    if (busy) *busy = false;
+    req->send(500);
+    return;
+  }
+  req->send(res);
+}

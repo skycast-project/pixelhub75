@@ -10,6 +10,10 @@ void sendHtmlChunked(AsyncWebServerRequest *req, String html);
 // Потоковая отдача HTML-файла из LittleFS с подстановками: страница не
 // собирается целиком в куче, поэтому не упирается в фрагментацию памяти.
 #include <vector>
+// Отдаёт уже готовый буфер (например, статический) потоково, без копии в кучу.
+// busy сбрасывается, когда ответ дочитан.
+void sendBufferChunked(AsyncWebServerRequest *req, const char *data, size_t len, bool *busy);
+
 void sendTemplateChunked(AsyncWebServerRequest *req, const char *path,
                          std::vector<std::pair<String, String>> reps);
 

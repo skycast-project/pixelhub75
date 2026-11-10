@@ -12,7 +12,7 @@
 class AsyncWebServer;   // полностью объявлен в ESPAsyncWebServer.h
 
 // Сколько значений можно принимать от каждого источника (MQTT / Народмон)
-#define RX_ITEMS 4
+#define RX_ITEMS 2   // по 2 значения на раздел: страница должна влезать в память
 
 struct IntegrationsConfig {
   // --- MQTT ---

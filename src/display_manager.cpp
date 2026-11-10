@@ -34,7 +34,7 @@ void showStartupTestPattern() {
 
 // Максимум точек текста, которые участвуют во взрыве. Логотип рисуется
 // крупно (шрифт 5x7 в масштабе x2), в двух строках - горит около 600 точек.
-#define MAX_LOGO_PARTICLES 900
+#define MAX_LOGO_PARTICLES 150   // было 900: экономия ~18 КБ RAM
 
 struct LogoParticle {
   float x, y;
